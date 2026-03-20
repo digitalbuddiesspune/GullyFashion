@@ -1,6 +1,6 @@
 // Default backend port matches server (7000); env override still supported
-const API_BASE = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000').replace(/\/$/, '');
-const API_BASE_URL = `${API_BASE}/api`;
+const API_BASE = (import.meta.env.VITE_BACKEND_API || 'http://localhost:7000').replace(/\/$/, '');
+const API_BASE_URL = `${API_BASE}`;
 
 async function request(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;

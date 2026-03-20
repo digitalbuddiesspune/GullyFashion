@@ -115,8 +115,9 @@ export const getProducts = async (req, res) => {
       if (productObj.images && Array.isArray(productObj.images)) {
         productObj.images = productObj.images.map(img => {
           if (img && img.url && !img.url.startsWith('http')) {
-            // If the URL is relative, make it absolute
-            const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 7000}`;
+            // If the URL is relative, make it absolute.
+            // Use BASE_URL for deployment; fallback to current host+port from env in local dev.
+            const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
             return {
               ...img,
               url: img.url.startsWith('/') ? `${baseUrl}${img.url}` : `${baseUrl}/${img.url}`

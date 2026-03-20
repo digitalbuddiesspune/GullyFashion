@@ -1,6 +1,7 @@
-// Default to backend port 7000 to match server config; allow override via VITE_BACKEND_URL
-const API_BASE = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000').replace(/\/$/, '');
-const API_URL = `${API_BASE}/api`;
+// Use VITE_BACKEND_API if provided; otherwise use VITE_BACKEND_URL; otherwise same-origin /api.
+// VITE_BACKEND_API may already include /api suffix (e.g., http://localhost:7007/api).
+const envApi = (import.meta.env.VITE_BACKEND_API || import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+const API_URL = envApi ? (envApi.endsWith('/api') ? envApi : `${envApi}/api`) : '/api';
 
 export const fetchSarees = async (category, options = {}) => {
   try {
