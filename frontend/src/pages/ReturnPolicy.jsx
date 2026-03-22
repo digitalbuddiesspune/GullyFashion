@@ -210,8 +210,12 @@ const ReturnPolicy = () => {
             </p>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-700"><strong>Email:</strong> returns@gullyfashion.com</p>
-              <p className="text-gray-700"><strong>Phone:</strong> +91-XXXXX-XXXXX</p>
-              <p className="text-gray-700"><strong>Address:</strong> GULLY FASHION, India</p>
+              <p className="text-gray-700"><strong>Company Name:</strong> KAVYANSH ENTREPRISES PRIVATE LIMITED</p>
+              <p className="text-gray-700"><strong>GSTIN:</strong> 07AAKCK9401A1ZT</p>
+              <p className="text-gray-700"><strong>CIN:</strong> U47912UP2024PTC200410</p>
+              <p className="text-gray-700">
+                <strong>Address:</strong> SHOP NO 310, PLOT NO 3, VARDHMAN PLAZA TOWER, DISTT CENTRE, Netaji Subhash Place Road, Pitampura, New Delhi, 110034
+              </p>
               <p className="text-gray-700 mt-2"><strong>Business Hours:</strong> Monday - Saturday, 9:00 AM - 6:00 PM IST</p>
             </div>
           </section>

@@ -201,10 +201,13 @@ const Footer = () => {
         {/* Copyright */}
         <div className="border-t border-gray-700 pt-3 text-center">
           <p className="text-gray-300 text-xs mb-1">
-            © {currentYear} <span className="font-semibold text-white">GULLY FASHION</span>. All rights reserved.
+            © {currentYear} <span className="font-semibold text-white">KAVYANSH ENTREPRISES PRIVATE LIMITED</span>. All rights reserved.
+          </p>
+          <p className="text-xs text-gray-400 mb-1">
+            GSTIN: 07AAKCK9401A1ZT | CIN: U47912UP2024PTC200410
           </p>
           <p className="text-xs text-gray-400 mb-2">
-            GSTIN: 27ABCDE1234F1Z5 | CIN: U74999MH2020PTC123456
+            SHOP NO 310, PLOT NO 3, VARDHMAN PLAZA TOWER, DISTT CENTRE, Netaji Subhash Place Road, Pitampura, New Delhi, 110034
           </p>
           <div className="flex justify-center space-x-4 text-xs text-gray-400">
             <Link to="/privacy" onClick={scrollToTop} className="hover:text-blue-500 transition-colors duration-200">

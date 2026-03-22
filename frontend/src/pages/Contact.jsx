@@ -53,6 +53,20 @@ const Contact = () => {
             </div>
 
           </div>
+
+          {/* Company Details */}
+          <div className="mt-8 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+            <h3 className="text-2xl font-light tracking-wider mb-4 text-gray-900 text-center">COMPANY DETAILS</h3>
+            <div className="space-y-2 text-gray-700 text-center">
+              <p><strong>Company Name:</strong> KAVYANSH ENTREPRISES PRIVATE LIMITED</p>
+              <p><strong>GSTIN:</strong> 07AAKCK9401A1ZT</p>
+              <p><strong>CIN:</strong> U47912UP2024PTC200410</p>
+              <p>
+                <strong>Address:</strong> SHOP NO 310, PLOT NO 3, VARDHMAN PLAZA TOWER, DISTT CENTRE,
+                Netaji Subhash Place Road, Pitampura, New Delhi, 110034
+              </p>
+            </div>
+          </div>
         </div>
 
       </div>

@@ -100,6 +100,22 @@ const About = () => {
           </p>
         </div>
 
+        {/* Company Information */}
+        <div className="max-w-4xl mx-auto mt-16">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Company Information</h2>
+            <div className="space-y-2 text-gray-700 text-center">
+              <p><strong>Company Name:</strong> KAVYANSH ENTREPRISES PRIVATE LIMITED</p>
+              <p><strong>GSTIN:</strong> 07AAKCK9401A1ZT</p>
+              <p><strong>CIN:</strong> U47912UP2024PTC200410</p>
+              <p>
+                <strong>Registered Address:</strong> SHOP NO 310, PLOT NO 3, VARDHMAN PLAZA TOWER, DISTT CENTRE,
+                Netaji Subhash Place Road, Pitampura, New Delhi, 110034
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
