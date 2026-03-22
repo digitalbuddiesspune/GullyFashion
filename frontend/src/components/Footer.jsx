@@ -1,25 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { api } from '../utils/api';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const [footerLogo, setFooterLogo] = useState('https://res.cloudinary.com/duc9svg7w/image/upload/v1765301725/Black_and_White_Bold_Line_Minimalist_Design_Studio_Logo_1_wfnkbf.png');
-
-  useEffect(() => {
-    const loadLogo = async () => {
-      try {
-        const data = await api.getLogo();
-        if (data.footerLogo) {
-          setFooterLogo(data.footerLogo);
-        }
-      } catch (err) {
-        console.error('Failed to load footer logo:', err);
-        // Keep default logo on error
-      }
-    };
-    loadLogo();
-  }, []);
+  const footerLogo = 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768217365/Black_White_Minimal_Initial_G_Letter_Logo_Design_dxdto9.png';
 
   const quickLinks = [
     { name: 'HOME', path: '/' },
@@ -103,12 +86,15 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             {/* Logo/Brand */}
-          <Link to="/" className="flex-shrink-0">
-            <img 
-              src={footerLogo} 
-              alt="GULLY FASHION Logo" 
-              className="h-28 md:h-36 lg:h-40 w-auto hover:scale-105 transition-transform duration-300 mb-3"
-            />
+          <Link to="/" className="inline-block mb-3">
+            <div className="bg-white rounded-md px-3 py-2 inline-flex items-center justify-center">
+              <img
+                src={footerLogo}
+                alt="GULLY FASHION Logo"
+                className="h-16  w-auto object-contain hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
           </Link>
             
 
