@@ -174,7 +174,8 @@ const TermsOfService = () => {
               If you have any questions about these Terms of Service, please contact us:
             </p>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-gray-700"><strong>Email:</strong> legal@gullyfashion.com</p>
+              <p className="text-gray-700"><strong>Email:</strong> support@gullyfashion.in, kavyanshenterprisespl@outlook.com</p>
+              <p className="text-gray-700"><strong>Phone:</strong> +91 8851489813</p>
               <p className="text-gray-700"><strong>Company Name:</strong> KAVYANSH ENTREPRISES PRIVATE LIMITED</p>
               <p className="text-gray-700"><strong>GSTIN:</strong> 07AAKCK9401A1ZT</p>
               <p className="text-gray-700"><strong>CIN:</strong> U47912UP2024PTC200410</p>

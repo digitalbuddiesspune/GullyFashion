@@ -31,13 +31,13 @@ const Contact = () => {
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Email</h3>
                 <p className="text-gray-700">
-                  <a href="mailto:info@gullyfashion.com" className="hover:text-amber-600 transition-colors">
-                    info@gullyfashion.com
+                  <a href="mailto:support@gullyfashion.in" className="hover:text-amber-600 transition-colors">
+                    support@gullyfashion.in
                   </a>
                 </p>
                 <p className="text-gray-700">
-                  <a href="mailto:support@gullyfashion.com" className="hover:text-amber-600 transition-colors">
-                    support@gullyfashion.com
+                  <a href="mailto:kavyanshenterprisespl@outlook.com" className="hover:text-amber-600 transition-colors">
+                    kavyanshenterprisespl@outlook.com
                   </a>
                 </p>
               </div>
@@ -47,8 +47,7 @@ const Contact = () => {
               <div className="text-3xl text-amber-600">📞</div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone</h3>
-                <p className="text-gray-700">+91 98765 43210</p>
-                <p className="text-gray-700">+91 98765 43211</p>
+                <p className="text-gray-700">+91 8851489813</p>
               </div>
             </div>
 
