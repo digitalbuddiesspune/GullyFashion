@@ -24,10 +24,9 @@ const Footer = () => {
 
   const customerService = [
     { name: 'SHIPPING POLICY', path: '/shipping' },
-    { name: 'RETURNS & EXCHANGE', path: '/returns' },
-    { name: 'SIZE GUIDE', path: '/size-guide' },
-    { name: 'CARE INSTRUCTIONS', path: '/care-instructions' },
-    { name: 'FAQ', path: '/faq' },
+    { name: 'TERMS OF SERVICE', path: '/terms' },
+    { name: 'RETURN POLICY', path: '/returns' },
+    { name: 'PRIVACY POLICY', path: '/privacy' },
     { name: 'TRACK YOUR ORDER', path: '/track-order' },
   ];
 
