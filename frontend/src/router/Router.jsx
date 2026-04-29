@@ -115,7 +115,7 @@ const Router = () => {
           <Route path="returns" element={<ReturnPolicy />} />
 
           {/* Private route(s) */}
-          <Route path="cart" element={<RequireAuth><Cart /></RequireAuth>} />
+          <Route path="cart" element={<Cart />} />
           <Route path="checkout/address" element={<RequireAuth><Address /></RequireAuth>} />
           <Route path="profile" element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path="track-order" element={<RequireAuth><Navigate to="/profile?tab=orders" replace /></RequireAuth>} />

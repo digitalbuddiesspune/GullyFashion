@@ -1,15 +1,27 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 
 const CartContext = createContext();
+const GUEST_CART_KEY = 'guest_cart';
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const hasToken = () => Boolean(localStorage.getItem('auth_token'));
+  const readGuestCart = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(GUEST_CART_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }, []);
+  const writeGuestCart = useCallback((items) => {
+    try {
+      localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
+    } catch {}
+  }, []);
 
   const mapServerCartToUI = useCallback((data) => {
     const items = data?.items || [];
@@ -35,41 +47,82 @@ export const CartProvider = ({ children }) => {
 
   const loadCart = useCallback(async () => {
     if (!hasToken()) {
-      setCart([]);
+      setCart(readGuestCart());
       return;
     }
     const data = await api.getCart();
     setCart(mapServerCartToUI(data));
-  }, [mapServerCartToUI]);
-
-  const requireAuth = useCallback(() => {
-    if (!hasToken()) {
-      alert('Please login to access your cart');
-      navigate('/signin', { state: { from: location }, replace: true });
-      return false;
-    }
-    return true;
-  }, [navigate, location]);
+  }, [mapServerCartToUI, readGuestCart]);
 
   const addToCart = useCallback(async (productIdOrObj, quantity = 1, size = null) => {
-    if (!requireAuth()) return;
     // Accept either productId or a product object
     let productId = productIdOrObj;
+    let productObj = null;
     if (typeof productIdOrObj === 'object' && productIdOrObj) {
       productId = productIdOrObj._id || productIdOrObj.id;
+      productObj = productIdOrObj;
+    }
+    if (!productId) return;
+    if (!hasToken()) {
+      const list = readGuestCart();
+      const existingIndex = list.findIndex((item) => item.id === productId);
+      if (existingIndex >= 0) {
+        list[existingIndex] = {
+          ...list[existingIndex],
+          quantity: (list[existingIndex].quantity || 1) + quantity,
+        };
+      } else {
+        const price = typeof productObj?.price === 'number'
+          ? productObj.price
+          : (typeof productObj?.mrp === 'number'
+            ? Math.round(productObj.mrp - (productObj.mrp * (productObj.discountPercent || 0) / 100))
+            : 0);
+        list.push({
+          id: productId,
+          name: productObj?.title || productObj?.name || 'Product',
+          image: productObj?.images?.image1 || productObj?.image || '',
+          material: productObj?.product_info?.SareeMaterial || '',
+          work: productObj?.product_info?.IncludedComponents || '',
+          brand: productObj?.product_info?.brand || '',
+          color: productObj?.product_info?.KurtiColor || productObj?.product_info?.SareeColor || productObj?.product_info?.tshirtColor || '',
+          price,
+          originalPrice: productObj?.mrp || price,
+          quantity,
+          size: size || null,
+        });
+      }
+      writeGuestCart(list);
+      setCart(list);
+      return;
     }
     await api.addToCart({ productId, quantity, size });
     await loadCart();
-  }, [requireAuth, loadCart]);
+  }, [loadCart, readGuestCart, writeGuestCart]);
 
   const removeFromCart = useCallback(async (productId) => {
-    if (!requireAuth()) return;
+    if (!hasToken()) {
+      const next = readGuestCart().filter((item) => item.id !== productId);
+      writeGuestCart(next);
+      setCart(next);
+      return;
+    }
     await api.removeFromCart(productId);
     await loadCart();
-  }, [requireAuth, loadCart]);
+  }, [loadCart, readGuestCart, writeGuestCart]);
 
   const updateQuantity = useCallback(async (productId, newQuantity) => {
-    if (!requireAuth()) return;
+    if (!hasToken()) {
+      if (newQuantity < 1) {
+        await removeFromCart(productId);
+        return;
+      }
+      const next = readGuestCart().map((item) => (
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      ));
+      writeGuestCart(next);
+      setCart(next);
+      return;
+    }
     if (newQuantity < 1) {
       await removeFromCart(productId);
       return;
@@ -86,16 +139,20 @@ export const CartProvider = ({ children }) => {
       await api.addToCart({ productId, quantity: newQuantity });
       await loadCart();
     }
-  }, [requireAuth, removeFromCart, cart, loadCart]);
+  }, [removeFromCart, cart, loadCart, readGuestCart, writeGuestCart]);
 
   const clearCart = useCallback(async () => {
+    if (!hasToken()) {
+      writeGuestCart([]);
+      setCart([]);
+      return;
+    }
     // No dedicated clear endpoint; remove each item
-    if (!requireAuth()) return;
     for (const item of cart) {
       await api.removeFromCart(item.id);
     }
     await loadCart();
-  }, [requireAuth, cart, loadCart]);
+  }, [cart, loadCart, writeGuestCart]);
 
   const cartTotal = cart.reduce((total, item) => total + ((item.price || 0) * (item.quantity || 1)), 0);
   const cartCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);

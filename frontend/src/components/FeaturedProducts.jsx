@@ -294,7 +294,7 @@ const FeaturedProducts = ({ category = 'shirts', layout = 'scroll', maxProducts 
                       const productId = product._id || product.id;
                       if (productId) {
                         try {
-                          await addToCart(productId, 1, null);
+                          await addToCart(product, 1, null);
                           // Optional: Show a success message or notification
                         } catch (error) {
                           console.error('Error adding to cart:', error);
