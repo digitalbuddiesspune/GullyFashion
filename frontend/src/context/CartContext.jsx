@@ -8,6 +8,15 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   const hasToken = () => Boolean(localStorage.getItem('auth_token'));
+  const isAuthError = (error) => {
+    const msg = (error?.message || '').toLowerCase();
+    return msg.includes('invalid token') || msg.includes('401') || msg.includes('unauthorized');
+  };
+  const clearAuthToken = () => {
+    try {
+      localStorage.removeItem('auth_token');
+    } catch {}
+  };
   const readGuestCart = useCallback(() => {
     try {
       const raw = localStorage.getItem(GUEST_CART_KEY);
@@ -50,8 +59,17 @@ export const CartProvider = ({ children }) => {
       setCart(readGuestCart());
       return;
     }
-    const data = await api.getCart();
-    setCart(mapServerCartToUI(data));
+    try {
+      const data = await api.getCart();
+      setCart(mapServerCartToUI(data));
+    } catch (error) {
+      if (isAuthError(error)) {
+        clearAuthToken();
+        setCart(readGuestCart());
+        return;
+      }
+      throw error;
+    }
   }, [mapServerCartToUI, readGuestCart]);
 
   const addToCart = useCallback(async (productIdOrObj, quantity = 1, size = null) => {
@@ -95,8 +113,42 @@ export const CartProvider = ({ children }) => {
       setCart(list);
       return;
     }
-    await api.addToCart({ productId, quantity, size });
-    await loadCart();
+    try {
+      await api.addToCart({ productId, quantity, size });
+      await loadCart();
+    } catch (error) {
+      if (!isAuthError(error)) throw error;
+      clearAuthToken();
+      const list = readGuestCart();
+      const existingIndex = list.findIndex((item) => item.id === productId);
+      if (existingIndex >= 0) {
+        list[existingIndex] = {
+          ...list[existingIndex],
+          quantity: (list[existingIndex].quantity || 1) + quantity,
+        };
+      } else {
+        const price = typeof productObj?.price === 'number'
+          ? productObj.price
+          : (typeof productObj?.mrp === 'number'
+            ? Math.round(productObj.mrp - (productObj.mrp * (productObj.discountPercent || 0) / 100))
+            : 0);
+        list.push({
+          id: productId,
+          name: productObj?.title || productObj?.name || 'Product',
+          image: productObj?.images?.image1 || productObj?.image || '',
+          material: productObj?.product_info?.SareeMaterial || '',
+          work: productObj?.product_info?.IncludedComponents || '',
+          brand: productObj?.product_info?.brand || '',
+          color: productObj?.product_info?.KurtiColor || productObj?.product_info?.SareeColor || productObj?.product_info?.tshirtColor || '',
+          price,
+          originalPrice: productObj?.mrp || price,
+          quantity,
+          size: size || null,
+        });
+      }
+      writeGuestCart(list);
+      setCart(list);
+    }
   }, [loadCart, readGuestCart, writeGuestCart]);
 
   const removeFromCart = useCallback(async (productId) => {
