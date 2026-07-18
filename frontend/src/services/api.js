@@ -214,15 +214,26 @@ export const deleteAddressById = async (id) => {
   return res.json();
 };
 
-export const createPaymentOrder = async (amount, notes = {}) => {
+export const createPaymentOrder = async () => {
   const res = await fetch(`${API_URL}/payment/orders`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify({ amount, currency: 'INR', notes }),
     credentials: 'include',
   });
-  if (!res.ok) throw new Error('Failed to create payment order');
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to create payment order');
+  return data;
+};
+
+export const getPaymentStatus = async (orderId) => {
+  const res = await fetch(`${API_URL}/payment/status/${orderId}`, {
+    method: 'GET',
+    headers: { ...authHeaders() },
+    credentials: 'include',
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to fetch payment status');
+  return data;
 };
 
 export const verifyPayment = async (payload) => {

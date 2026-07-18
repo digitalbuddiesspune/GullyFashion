@@ -36,6 +36,7 @@ export const api = {
   me: async () => {
     try {
       return await request('/me', { method: 'GET' });
+    // eslint-disable-next-line no-unused-vars
     } catch (e) {
       // Fallback for header-token based auth
       return await request('/auth/me', { method: 'GET' });

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { getMyAddress, saveMyAddress, deleteAddressById, createPaymentOrder, verifyPayment, createCODOrder } from '../services/api';
+import { getMyAddress, saveMyAddress, deleteAddressById, createPaymentOrder, createCODOrder, getPaymentStatus } from '../services/api';
 
 const indianStates = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -67,7 +67,26 @@ export default function AddressForm() {
   const [showForm, setShowForm] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' or 'cod'
   const [processingOrder, setProcessingOrder] = useState(false);
+  const [upiPayment, setUpiPayment] = useState(null); // { orderId, qrCodeString, amount }
+  const pollRef = useRef(null);
   const { cart, cartTotal: total, loadCart } = useCart();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'failed') {
+      alert('Payment failed or was cancelled. Please try again.');
+      params.delete('payment');
+      params.delete('reason');
+      const next = params.toString();
+      window.history.replaceState({}, '', `${window.location.pathname}${next ? `?${next}` : ''}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   // Calculate price details
   const calculatePriceDetails = () => {
@@ -129,49 +148,44 @@ export default function AddressForm() {
         return;
       }
 
-      // Handle Online Payment (Razorpay)
-      if (!window.Razorpay) {
-        await new Promise((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-          s.onload = resolve;
-          s.onerror = reject;
-          document.body.appendChild(s);
-        });
+      // Handle Online Payment (Airpay UPI QR)
+      setProcessingOrder(true);
+      const payment = await createPaymentOrder();
+      if (!payment?.qrCodeString || !payment?.orderId) {
+        throw new Error('Invalid payment session from server');
       }
-      const amount = priceDetails.total;
-      const { order, key } = await createPaymentOrder(amount, {
-        name: formData.name,
-        mobile: formData.mobile,
-        city: formData.city,
+
+      setUpiPayment({
+        orderId: payment.orderId,
+        qrCodeString: payment.qrCodeString,
+        amount: payment.amount,
+        airpayOrderId: payment.airpayOrderId,
       });
-      const options = {
-        key,
-        amount: order.amount,
-        currency: order.currency,
-        name: 'GULLY FASHION',
-        description: 'Elegance in Every Drape',
-        order_id: order.id,
-        prefill: { name: formData.name || '', contact: formData.mobile || '' },
-        theme: { color: '#000000' },
-        handler: async function (response) {
-          try {
-            const r = await verifyPayment(response);
-            if (r && r.success) {
-              await loadCart();
-              navigate('/profile?tab=orders');
-            } else {
-              alert('Payment verification failed');
-            }
-          } catch (e) {
-            alert('Payment verification failed');
+      setProcessingOrder(false);
+
+      if (pollRef.current) clearInterval(pollRef.current);
+      pollRef.current = setInterval(async () => {
+        try {
+          const status = await getPaymentStatus(payment.orderId);
+          if (status?.paid) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+            setUpiPayment(null);
+            await loadCart();
+            navigate('/order/success', {
+              state: {
+                orderId: payment.orderId,
+                paymentMethod: 'airpay',
+              },
+            });
           }
-        },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+        } catch (err) {
+          console.error('Payment status poll error:', err);
+        }
+      }, 3000);
     } catch (e) {
       setProcessingOrder(false);
+      setUpiPayment(null);
       const errorMessage = e?.message || e?.error || 'Unable to process payment. Please try again.';
       console.error('Payment error details:', {
         message: e?.message,
@@ -403,6 +417,45 @@ export default function AddressForm() {
               <div className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
               <div className="w-2 h-2 bg-black rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Airpay UPI QR Modal */}
+      {upiPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-1">Scan & Pay with UPI</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Amount: ₹{upiPayment.amount}
+            </p>
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(upiPayment.qrCodeString)}`}
+              alt="UPI QR Code"
+              className="mx-auto w-60 h-60 border border-gray-100 rounded-lg"
+            />
+            <a
+              href={upiPayment.qrCodeString}
+              className="mt-4 inline-block w-full bg-black text-white py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            >
+              Open UPI App
+            </a>
+            <p className="mt-3 text-xs text-gray-500">
+              Waiting for payment confirmation…
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                if (pollRef.current) {
+                  clearInterval(pollRef.current);
+                  pollRef.current = null;
+                }
+                setUpiPayment(null);
+              }}
+              className="mt-4 text-sm text-gray-600 hover:text-gray-900 underline"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -773,7 +826,7 @@ export default function AddressForm() {
                   />
                   <div className="flex-1">
                     <span className="text-sm font-medium text-gray-900">Online Payment</span>
-                    <p className="text-xs text-gray-500">Pay securely with Razorpay</p>
+                    <p className="text-xs text-gray-500">Pay securely with Airpay UPI</p>
                   </div>
                 </label>
                 <label className="flex items-center gap-3 p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">

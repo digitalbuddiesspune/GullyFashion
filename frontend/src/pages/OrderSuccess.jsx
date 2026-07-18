@@ -6,7 +6,12 @@ export default function OrderSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const [countdown, setCountdown] = useState(5);
-  const orderId = location.state?.orderId || null;
+  const paymentMethod = location.state?.paymentMethod
+    || new URLSearchParams(location.search).get('payment')
+    || 'cod';
+  const orderId = location.state?.orderId
+    || new URLSearchParams(location.search).get('orderId')
+    || null;
   const orderNumber = location.state?.orderNumber || null;
 
   useEffect(() => {
@@ -31,6 +36,8 @@ export default function OrderSuccess() {
   const handleContinueShopping = () => {
     navigate('/', { replace: true });
   };
+
+  const isOnline = paymentMethod === 'airpay' || paymentMethod === 'online';
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
@@ -59,13 +66,17 @@ export default function OrderSuccess() {
         )}
 
         {/* Order Info Box */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
+        <div className={`border rounded-lg p-6 mb-8 ${isOnline ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
           <div className="flex items-center justify-center gap-3 mb-3">
-            <FaShoppingBag className="text-amber-700 text-2xl" />
-            <h2 className="text-xl font-semibold text-amber-900">Cash on Delivery</h2>
+            <FaShoppingBag className={`text-2xl ${isOnline ? 'text-green-700' : 'text-amber-700'}`} />
+            <h2 className={`text-xl font-semibold ${isOnline ? 'text-green-900' : 'text-amber-900'}`}>
+              {isOnline ? 'Paid Online' : 'Cash on Delivery'}
+            </h2>
           </div>
-          <p className="text-amber-800 text-sm">
-            Your order will be delivered to your address. Please keep the exact cash ready for payment when the delivery arrives.
+          <p className={`text-sm ${isOnline ? 'text-green-800' : 'text-amber-800'}`}>
+            {isOnline
+              ? 'Your payment was received successfully via Airpay. We will start preparing your order shortly.'
+              : 'Your order will be delivered to your address. Please keep the exact cash ready for payment when the delivery arrives.'}
           </p>
         </div>
 

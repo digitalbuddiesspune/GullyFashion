@@ -21,9 +21,10 @@ import cookieJwtAuth from './middleware/authMiddleware.js';
 configDotenv();
 
 console.log(
-  'Razorpay env loaded:',
-  Boolean(process.env.RAZORPAY_KEY_ID),
-  Boolean(process.env.RAZORPAY_KEY_SECRET)
+  'Airpay env loaded:',
+  Boolean(process.env.AIRPAY_MERCHANT_ID),
+  Boolean(process.env.AIRPAY_USERNAME),
+  Boolean(process.env.AIRPAY_SECRET || process.env.AIRPAY_CLIENT_SECRET)
 );
 
 const server = express();
@@ -42,6 +43,7 @@ server.use(
 );
 
 server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());
 
 // Initialize Passport

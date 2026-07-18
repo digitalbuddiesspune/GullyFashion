@@ -74,7 +74,7 @@ const AdminOrders = () => {
 
   const normalizedStatus = (o) => o.orderStatus || o.status || 'pending';
   const normalizedPaymentStatus = (o) => o.paymentStatus || (o.status === 'failed' ? 'failed' : o.status === 'paid' ? 'paid' : 'pending');
-  const normalizedPaymentMethod = (o) => (o.paymentMethod || (o.razorpayPaymentId ? 'razorpay' : 'cod')).toUpperCase();
+  const normalizedPaymentMethod = (o) => (o.paymentMethod || (o.airpayTransactionId ? 'airpay' : (o.razorpayPaymentId ? 'razorpay' : 'cod'))).toUpperCase();
 
   const showToast = (text, type = 'success') => {
     setToast({ show: true, text, type });
