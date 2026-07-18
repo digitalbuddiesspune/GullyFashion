@@ -50,7 +50,7 @@ export default function AddressForm() {
     }
   }, [searchTerm]);
 
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     name: '',
     mobile: '',
     pincode: '',
@@ -60,8 +60,12 @@ export default function AddressForm() {
     state: '',
     landmark: '',
     alternatePhone: '',
-    addressType: 'home'
-  });
+    addressType: 'home',
+  };
+
+  const [formData, setFormData] = useState({ ...emptyForm });
+  // Saved address for display only — keep the fill form empty until user edits
+  const [savedAddress, setSavedAddress] = useState(null);
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showForm, setShowForm] = useState(true);
@@ -298,10 +302,26 @@ export default function AddressForm() {
     try {
       setSaving(true);
       const saved = await saveMyAddress(payload);
+      const nextSaved = {
+        name: payload.fullName,
+        mobile: payload.mobileNumber,
+        pincode: payload.pincode,
+        locality: payload.locality,
+        address: payload.address,
+        city: payload.city,
+        state: payload.state,
+        landmark: payload.landmark,
+        alternatePhone: payload.alternatePhone,
+        addressType: formData.addressType,
+      };
+      setSavedAddress(nextSaved);
+      if (saved?._id) setAddressId(saved._id);
       setHasSavedAddress(true);
       setShowSuccess(true);
       setEditMode(false);
-      setShowForm(false); // Hide the form after successful save
+      setShowForm(false);
+      // Clear fill form so next edit/open starts clean unless user clicks Edit
+      setFormData({ ...emptyForm });
       
       // Auto-hide success message after 3 seconds
       setTimeout(() => {
@@ -316,10 +336,14 @@ export default function AddressForm() {
   };
 
   const handleCancel = () => {
-    console.log('Cancel clicked');
+    setFormData({ ...emptyForm });
+    if (hasSavedAddress && savedAddress) {
+      setShowForm(false);
+      setEditMode(false);
+    }
   };
 
-  // Load existing address on mount
+  // Load existing address on mount — show saved card, keep fill form empty
   useEffect(() => {
     const load = async () => {
       try {
@@ -328,9 +352,9 @@ export default function AddressForm() {
         if (doc && doc._id) {
           setAddressId(doc._id);
           setHasSavedAddress(true);
-          setShowForm(false); // Hide form if address exists
+          setShowForm(false);
           setEditMode(false);
-          setFormData({
+          setSavedAddress({
             name: doc.fullName || '',
             mobile: doc.mobileNumber || '',
             pincode: doc.pincode || '',
@@ -342,12 +366,16 @@ export default function AddressForm() {
             alternatePhone: doc.alternatePhone || '',
             addressType: (doc.addressType || 'Home').toLowerCase(),
           });
+          setFormData({ ...emptyForm });
         } else {
-          setShowForm(true); // Show form if no address exists
+          setSavedAddress(null);
+          setFormData({ ...emptyForm });
+          setShowForm(true);
         }
       } catch (e) {
-        // no-op if unauthenticated
-        setShowForm(true); // Show form if there's an error
+        setSavedAddress(null);
+        setFormData({ ...emptyForm });
+        setShowForm(true);
       } finally {
         setLoadingAddress(false);
       }
@@ -356,6 +384,11 @@ export default function AddressForm() {
   }, []);
 
   const handleEditAddress = () => {
+    if (savedAddress) {
+      setFormData({ ...emptyForm, ...savedAddress });
+    } else {
+      setFormData({ ...emptyForm });
+    }
     setShowForm(true);
     setEditMode(true);
   };
@@ -368,19 +401,8 @@ export default function AddressForm() {
     try {
       setLoadingAddress(true);
       await deleteAddressById(addressId);
-      // Reset form and show empty form
-      setFormData({
-        name: '',
-        mobile: '',
-        pincode: '',
-        locality: '',
-        address: '',
-        city: '',
-        state: '',
-        landmark: '',
-        alternatePhone: '',
-        addressType: 'home'
-      });
+      setFormData({ ...emptyForm });
+      setSavedAddress(null);
       setAddressId(null);
       setHasSavedAddress(false);
       setShowForm(true);
@@ -462,7 +484,7 @@ export default function AddressForm() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           {showForm ? (
-            <form onSubmit={handleSaveAddress} className="bg-white shadow-sm rounded">
+            <form onSubmit={handleSaveAddress} className="bg-white shadow-sm rounded" autoComplete="off">
             <div className="bg-black text-white p-4 flex items-center gap-3">
               <span>1</span>
               <span className="font-medium">DELIVERY ADDRESS</span>
@@ -472,17 +494,17 @@ export default function AddressForm() {
               {loadingAddress && (
                 <div className="mb-4 text-sm text-gray-600">Loading your saved address…</div>
               )}
-              {hasSavedAddress && !editMode && (
+              {hasSavedAddress && !editMode && savedAddress && (
                 <div className="mb-6 border rounded p-4 bg-gray-50">
-                  <div className="font-medium text-gray-900">{formData.name}</div>
-                  <div className="text-sm text-gray-700">{formData.address}</div>
-                  <div className="text-sm text-gray-700">{formData.locality}, {formData.city} - {formData.pincode}</div>
-                  <div className="text-sm text-gray-700">{formData.state}</div>
-                  <div className="text-sm text-gray-700">Mobile: {formData.mobile}</div>
-                  {formData.landmark && <div className="text-sm text-gray-700">Landmark: {formData.landmark}</div>}
-                  {formData.alternatePhone && <div className="text-sm text-gray-700">Alt: {formData.alternatePhone}</div>}
+                  <div className="font-medium text-gray-900">{savedAddress.name}</div>
+                  <div className="text-sm text-gray-700">{savedAddress.address}</div>
+                  <div className="text-sm text-gray-700">{savedAddress.locality}, {savedAddress.city} - {savedAddress.pincode}</div>
+                  <div className="text-sm text-gray-700">{savedAddress.state}</div>
+                  <div className="text-sm text-gray-700">Mobile: {savedAddress.mobile}</div>
+                  {savedAddress.landmark && <div className="text-sm text-gray-700">Landmark: {savedAddress.landmark}</div>}
+                  {savedAddress.alternatePhone && <div className="text-sm text-gray-700">Alt: {savedAddress.alternatePhone}</div>}
                   <div className="mt-4 flex gap-3">
-                    <button type="button" onClick={() => setEditMode(true)} className="px-4 py-2 border rounded text-black border-black hover:bg-gray-50 cursor-pointer">Edit Address</button>
+                    <button type="button" onClick={handleEditAddress} className="px-4 py-2 border rounded text-black border-black hover:bg-gray-50 cursor-pointer">Edit Address</button>
                     <button 
                       type="button" 
                       onClick={async () => {
@@ -491,18 +513,8 @@ export default function AddressForm() {
                             await deleteAddressById(addressId);
                             setHasSavedAddress(false);
                             setEditMode(true);
-                            setFormData({
-                              name: '',
-                              mobile: '',
-                              pincode: '',
-                              locality: '',
-                              address: '',
-                              city: '',
-                              state: '',
-                              landmark: '',
-                              alternatePhone: '',
-                              addressType: 'home'
-                            });
+                            setSavedAddress(null);
+                            setFormData({ ...emptyForm });
                             setAddressId(null);
                             alert('Address deleted successfully');
                           } catch (error) {
@@ -539,6 +551,7 @@ export default function AddressForm() {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
+                    autoComplete="off"
                     required
                     className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -552,6 +565,7 @@ export default function AddressForm() {
                     onChange={handleInputChange}
                     maxLength={10}
                     placeholder="Enter 10-digit mobile number"
+                    autoComplete="off"
                     required
                     className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -744,17 +758,17 @@ export default function AddressForm() {
                 <div className="mb-4 p-4 border border-green-200 bg-green-50 rounded">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-medium">{formData.name}</h3>
+                      <h3 className="font-medium">{(savedAddress || formData).name}</h3>
                       <p className="text-gray-700">
-                        {formData.address}, {formData.locality},<br />
-                        {formData.city}, {formData.state} - {formData.pincode}
+                        {(savedAddress || formData).address}, {(savedAddress || formData).locality},<br />
+                        {(savedAddress || formData).city}, {(savedAddress || formData).state} - {(savedAddress || formData).pincode}
                       </p>
                       <p className="mt-2">
-                        <span className="font-medium">Mobile:</span> {formData.mobile}
-                        {formData.alternatePhone && `, ${formData.alternatePhone}`}
+                        <span className="font-medium">Mobile:</span> {(savedAddress || formData).mobile}
+                        {(savedAddress || formData).alternatePhone && `, ${(savedAddress || formData).alternatePhone}`}
                       </p>
-                      {formData.landmark && (
-                        <p><span className="font-medium">Landmark:</span> {formData.landmark}</p>
+                      {(savedAddress || formData).landmark && (
+                        <p><span className="font-medium">Landmark:</span> {(savedAddress || formData).landmark}</p>
                       )}
                     </div>
                     <div className="flex flex-col items-end gap-2">
@@ -775,7 +789,7 @@ export default function AddressForm() {
                         </button>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {formData.addressType.toUpperCase()} ADDRESS
+                        {((savedAddress || formData).addressType || 'home').toUpperCase()} ADDRESS
                       </div>
                     </div>
                   </div>
