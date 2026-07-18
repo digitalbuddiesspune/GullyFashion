@@ -270,13 +270,6 @@ const SignIn = () => {
                 >
                   {loading ? 'Signing In...' : 'Sign In'}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => navigate(location.state?.from?.pathname || '/')}
-                  className="w-full mt-2 border border-neutral-200 text-neutral-700 py-2 rounded-lg font-semibold hover:bg-neutral-50 transition-all duration-300"
-                >
-                  Continue as Guest
-                </button>
               </form>
               )}
 
