@@ -2,6 +2,15 @@ import { Product } from '../models/product.js';
 
 
 // Category mapping for URL slugs to database category names
+const POLO_EXCLUSION = {
+  $nor: [
+    { category: { $regex: /^polo$/i } },
+    { category: { $regex: /^polo shirt$/i } },
+    { 'category.name': { $regex: /^polo$/i } },
+    { 'category.slug': { $regex: /^polo$/i } },
+  ],
+};
+
 const CATEGORY_MAPPING = {
   'tshirts': ['TShirts', 't-shirt', 't-shirt', 'tshirt', 't shirt', 't shirts', 'T-Shirt', 'T-Shirts'],
   't-shirts': ['TShirts', 't-shirt', 't-shirt', 'tshirt', 't shirt', 't shirts', 'T-Shirt', 'T-Shirts'],
