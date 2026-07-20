@@ -83,7 +83,6 @@ const Home = () => {
               {[
                 { name: 'Crew Neck', path: '/category/crew-neck', image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768376336/4e7aba40995ac5e9dc35daaf26b76220_lq6uip.jpg' },
                 { name: 'V Neck', path: '/category/v-neck', image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768376888/15cca942-1f95-4406-bf62-d20c5dda6114.png' },
-                { name: 'Polo', path: '/category/polo', image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768377096/ed2ff93a-e0ee-4de3-aae3-03d0e5212693.png' },
                 { name: 'Henley', path: '/category/henley', image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768377277/822a1b4b1a5863b8d99a91bed9f67a38_qsgsdz.jpg' },
                 { name: 'Long Sleeve', path: '/category/long-sleeve', image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768377863/3d6055a6e75a43c48cb44afbee99c1a4_p4rsmx.jpg' },
                 { name: 'Oversized', path: '/category/oversized', image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1768377992/b86023dc4d82ff7be9c532b236321f06_iyul2v.jpg' },

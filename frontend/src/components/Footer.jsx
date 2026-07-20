@@ -14,7 +14,6 @@ const Footer = () => {
   const categories = [
     { name: 'CREW NECK', path: '/category/crew-neck' },
     { name: 'V NECK', path: '/category/v-neck' },
-    { name: 'POLO', path: '/category/polo' },
     { name: 'HENLEY', path: '/category/henley' },
     { name: 'SCOOP NECK/U-NECK', path: '/category/scoop-neck' },
     { name: 'LONG SLEEVE', path: '/category/long-sleeve' },

@@ -16,36 +16,30 @@ const categories = [
   },
   {
     id: 3,
-    name: 'Polo',
-    image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765270201/2bc21bba-d836-46f0-81a0-6e045d2b07fd.png',
-    path: '/category/polo'
-  },
-  {
-    id: 4,
     name: 'Henley',
     image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765270201/2bc21bba-d836-46f0-81a0-6e045d2b07fd.png',
     path: '/category/henley'
   },
    {
-    id: 5,
+    id: 4,
     name: 'Long Sleeve',
     image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765270201/2bc21bba-d836-46f0-81a0-6e045d2b07fd.png',
     path: '/category/long-sleeve'
   },
    {
-    id: 6,
+    id: 5,
     name: 'Oversized',
     image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765270201/2bc21bba-d836-46f0-81a0-6e045d2b07fd.png',
     path: '/category/oversized'
   },
    {
-    id: 7,
+    id: 6,
     name: 'Pocket Tee',
     image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765270201/2bc21bba-d836-46f0-81a0-6e045d2b07fd.png',
     path: '/category/pocket-tee'
   },
    {
-    id: 8,
+    id: 7,
     name: 'Tshirt',
     image: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765270201/2bc21bba-d836-46f0-81a0-6e045d2b07fd.png',
     path: '/category/tshirts'

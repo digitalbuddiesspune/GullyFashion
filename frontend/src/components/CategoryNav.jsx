@@ -9,7 +9,6 @@ const CategoryNav = () => {
     { name: 'All Categories', path: '/' },
     { name: 'Crew Neck', path: '/category/crew-neck' },
     { name: 'V Neck', path: '/category/v-neck' },
-    { name: 'Polo', path: '/category/polo' },
     { name: 'Henley', path: '/category/henley' },
     { name: 'Long Sleeve', path: '/category/long-sleeve' },
     { name: 'Oversized', path: '/category/oversized' },

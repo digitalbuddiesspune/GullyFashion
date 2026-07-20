@@ -288,16 +288,6 @@ const Navbar = () => {
                           </svg>
                     </Link>
                     <Link
-                          to="/category/polo"
-                      onClick={() => { setIsCategoriesOpen(false); scrollToTop(); }}
-                          className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded transition-colors group"
-                    >
-                          <span className="text-sm text-gray-700 group-hover:text-black transition-colors">Polo</span>
-                          <svg className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                    </Link>
-                    <Link
                           to="/category/henley"
                       onClick={() => { setIsCategoriesOpen(false); scrollToTop(); }}
                           className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded transition-colors group"
