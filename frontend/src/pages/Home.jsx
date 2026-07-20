@@ -126,7 +126,7 @@ const Home = () => {
           <div className="text-center mb-6 sm:mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">New Arrival</h2>
           </div>
-          <FeaturedProducts category="polo" layout="grid" />
+          <FeaturedProducts category="tshirts" layout="grid" />
         </section>
 
         {/* Banner Section 1 */}
